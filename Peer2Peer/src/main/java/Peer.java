@@ -92,7 +92,7 @@ public class Peer {
 				if(message.equalsIgnoreCase("exit")){ // they want to exit
 					System.out.println("Now exiting!");
 					break;
-				}else if(message.equalsIgnoreCase("ready")) {// if they type ready
+				}else if(message.equalsIgnoreCase("ready") && !ready) {// if they type ready
 					System.out.println("Ready to play game! You can chat in the meantime!");
 					send = generateMessage("ready", message);
 					serverThread.readyPlayers++;
