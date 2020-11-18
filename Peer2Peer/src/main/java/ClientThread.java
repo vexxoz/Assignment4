@@ -26,10 +26,7 @@ public class ClientThread extends Thread {
 			    if(json.getString("MessageType").equalsIgnoreCase("ready")) { // someone sends the ready message
 			    	serverThread.readyPlayers++; // increase the number of players that are ready
 			    	System.out.println(json.getString("username").toString() + " is ready!"); // tell the user that someone is ready
-			    	if(serverThread.readyPlayers == serverThread.players) { // if everyone is ready
-			    		serverThread.gameStarted = true; // the game is started
-			    		System.out.println("Game has been started! Are you the host? (Yes/No)"); // ask who is the host
-			    	}
+			    	serverThread.checkReady();
 			    }else if(json.getString("MessageType").equalsIgnoreCase("chat")) { // message is a chat
 			    	System.out.println("[" + json.getString("username").toString() + "] " + json.getString("message").toString());	
 			    }else if(json.getString("MessageType").equalsIgnoreCase("host")) { // message is a chat

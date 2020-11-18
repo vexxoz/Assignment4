@@ -57,4 +57,11 @@ public class ServerThread extends Thread{
 			e.printStackTrace();
 		}
 	}	
+	
+	void checkReady() {
+    	if(readyPlayers == players) { // if everyone is ready
+    		gameStarted = true; // the game is started
+    		System.out.println("Game has been started! Are you the host? (Yes/No)"); // ask who is the host
+    	}
+	}
 }

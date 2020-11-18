@@ -97,6 +97,7 @@ public class Peer {
 					send = generateMessage("ready", message);
 					serverThread.readyPlayers++;
 					ready = true;
+					serverThread.checkReady();
 				}else if(ready && !serverThread.gameStarted) { // if ready can chat
 					send = generateMessage("chat", message);
 				}else if(ready && serverThread.gameStarted) { // they are ready and the game has been started
