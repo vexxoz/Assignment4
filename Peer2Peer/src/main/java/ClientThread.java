@@ -23,15 +23,21 @@ public class ClientThread extends Thread {
 		while (true) {
 			try {
 			    JSONObject json = new JSONObject(bufferedReader.readLine());
-			    if(json.getString("MessageType").equalsIgnoreCase("ready")) {
-			    	serverThread.readyPlayers++;
-			    	if(serverThread.readyPlayers == serverThread.players) {
-			    		serverThread.gameStarted = true;
-			    		System.out.println("Game has been started! Are you the host? (Yes/No)");
+			    if(json.getString("MessageType").equalsIgnoreCase("ready")) { // someone sends the ready message
+			    	serverThread.readyPlayers++; // increase the number of players that are ready
+			    	System.out.println(json.getString("username").toString() + " is ready!"); // tell the user that someone is ready
+			    	if(serverThread.readyPlayers == serverThread.players) { // if everyone is ready
+			    		serverThread.gameStarted = true; // the game is started
+			    		System.out.println("Game has been started! Are you the host? (Yes/No)"); // ask who is the host
 			    	}
+			    }else if(json.getString("MessageType").equalsIgnoreCase("chat")) { // message is a chat
+			    	System.out.println("[" + json.getString("username").toString() + "] " + json.getString("message").toString());	
+			    }else if(json.getString("MessageType").equalsIgnoreCase("host")) { // message is a chat
+			    	System.out.println("[" + json.getString("username").toString() + "] " + json.getString("message").toString());	
+			    }else {
+			    	System.out.println("Unknown message recieved!");
 			    }
-			    // just print the response to allow for easier reading and debugging
-			    System.out.println(json.toString());
+			    
 			} catch (Exception e) {
 				interrupt();
 				break;
