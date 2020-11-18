@@ -13,20 +13,30 @@ import org.json.*;
 
 public class ClientThread extends Thread {
 	private BufferedReader bufferedReader;
+	private ServerThread serverThread;
 	
-	public ClientThread(Socket socket) throws IOException {
+	public ClientThread(Socket socket, ServerThread in) throws IOException {
 		bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		this.serverThread = in;
 	}
 	public void run() {
 		while (true) {
 			try {
 			    JSONObject json = new JSONObject(bufferedReader.readLine());
-			    System.out.println("[" + json.getString("username")+"]: " + json.getString("message"));
+			    if(json.getString("MessageType").equalsIgnoreCase("ready")) {
+			    	serverThread.readyPlayers++;
+			    }
+			    // just print the response to allow for easier reading and debugging
+			    System.out.println(json.toString());
 			} catch (Exception e) {
 				interrupt();
 				break;
 			}
 		}
 	}
+	
+//	private String decodeProto() {
+//		
+//	}
 
 }

@@ -15,9 +15,13 @@ import java.util.Set;
 public class ServerThread extends Thread{
 	private ServerSocket serverSocket;
 	private Set<Socket> listeningSockets = new HashSet<Socket>();
+	protected int otherPlayers;
+	protected int readyPlayers;
 	
 	public ServerThread(String portNum) throws IOException {
 		serverSocket = new ServerSocket(Integer.valueOf(portNum));
+		this.otherPlayers = 0;
+		this.readyPlayers = 0;
 	}
 	
 	/**
@@ -28,6 +32,8 @@ public class ServerThread extends Thread{
 			while (true) {
 				Socket sock = serverSocket.accept();
 				listeningSockets.add(sock);
+				// add other player count
+				otherPlayers++;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

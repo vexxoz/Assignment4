@@ -15,11 +15,18 @@ public class Peer {
 	private String username;
 	private BufferedReader bufferedReader;
 	private ServerThread serverThread;
+	protected boolean isHost;
+	protected int points;
+	protected final int winningPoints = 5;
+	private boolean ready;
 	
 	public Peer(BufferedReader bufReader, String username, ServerThread serverThread){
 		this.username = username;
 		this.bufferedReader = bufReader;
 		this.serverThread = serverThread;
+		this.isHost = false;
+		this.points = 0;
+		this.ready = false;
 	}
 	/**
 	 * Main method saying hi and also starting the Server thread where other peers can subscribe to listen
@@ -54,7 +61,7 @@ public class Peer {
 			Socket socket = null;
 			try {
 				socket = new Socket(address[0], Integer.valueOf(address[1]));
-				new ClientThread(socket).start();
+				new ClientThread(socket, serverThread).start();
 			} catch (Exception c) {
 				if (socket != null) {
 					socket.close();
@@ -78,16 +85,25 @@ public class Peer {
 	 */
 	public void askForInput() throws Exception {
 		try {
-			System.out.println("> You can now start chatting (exit to exit)");
+			System.out.println("> Type ready when ready to begin the game (exit to exit)");
 			while(true) {
+				String send = "";
 				String message = bufferedReader.readLine();
-				if (message.equals("exit")) {
-					System.out.println("bye, see you next time");
+				if(message.equalsIgnoreCase("exit")){ // they want to exit
+					System.out.println("Now exiting!");
 					break;
-				} else {
-					// we are sending the message to our server thread. this one is then responsible for sending it to listening peers
-					serverThread.sendMessage("{'username': '"+ username +"','message':'" + message + "'}");
-				}	
+				}else if(message.equalsIgnoreCase("ready")) {// if they type ready
+					System.out.println("Ready to play game! You can chat in the meantime!");
+					send = "{'MessageType': 'ready','username': '"+ username +"','message':'" + message + "'}";
+					ready = true;
+				}else if(ready) { // if ready can chat
+					send = "{'username': '"+ username +"','message':'" + message + "'}";
+				}
+				
+				// if there is something to send
+				if(send.length() > 0) {
+					serverThread.sendMessage(send);
+				}
 			}
 			System.exit(0);
 		

@@ -7,12 +7,15 @@ repositories {
 
 dependencies {
     compile group: 'org.json', name: 'json', version: '20200518'
+	runtime group: 'com.google.protobuf', name: 'protobuf-gradle-plugin', version: '0.8.13'
+
 }
 
 //define main class
 mainClassName = 'SimpleServer'
 
 task runPeer(type: JavaExec) {
+	group "Peer"
   description 'Runs a peer'
 
   classpath = sourceSets.main.runtimeClasspath
