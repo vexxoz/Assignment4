@@ -10,13 +10,13 @@ class Server {
             System.out.println("Usage: ThreadedServer <port>");
             System.exit(1);
         }
-        
-        ServerSocket server = new ServerSocket(Integer.parseInt(args[0]));
-        System.out.println("Server Started...");
+        int port = Integer.parseInt(args[0]);
+        ServerSocket server = new ServerSocket(port);
+        System.out.println("Server Started on port "+ port +"...");
         while (true) {
             System.out.println("Accepting a Request...");
             Socket sock = server.accept();
-
+            System.out.println("Request Accepted!");
             Performer performer = new Performer(sock, strings);
             performer.doPerform();
         }
