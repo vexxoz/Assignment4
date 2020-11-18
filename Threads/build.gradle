@@ -41,7 +41,7 @@ task singleThread(type: JavaExec) {
 
 task threadedServer(type: JavaExec) {
 	group 'Multi-Threaded'
-	description 'Run the single threaded version of the server'
+	description 'Run multi-threaded version of the server'
 	
 	classpath = sourceSets.main.runtimeClasspath
 
@@ -53,5 +53,22 @@ task threadedServer(type: JavaExec) {
 		args(project.getProperty('port'));
 	} else{
 		args(8888);
+	}
+}
+
+task threadPoolServer(type: JavaExec) {
+	group 'Multi-Threaded'
+	description 'Run multi-threaded version of the server with a connect bound'
+	
+	classpath = sourceSets.main.runtimeClasspath
+
+	main = 'ThreadPoolServer'
+
+	// only works if two arguments are provided
+	// Try: using default values in case non or only one parameter is provided
+	if (project.hasProperty("port") && project.hasProperty("bound")) {
+		args(project.getProperty('port'), project.getProperty('bound'));
+	} else{
+		args(8888, 5);
 	}
 }

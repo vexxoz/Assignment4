@@ -8,7 +8,7 @@ class Server {
         StringList strings = new StringList();
 
         if (args.length != 1) {
-            System.out.println("Usage: ThreadedServer <port>");
+            System.out.println("Usage: Server <port>");
             System.exit(1);
         }
         int port = Integer.parseInt(args[0]);
