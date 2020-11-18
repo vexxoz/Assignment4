@@ -25,6 +25,10 @@ public class ClientThread extends Thread {
 			    JSONObject json = new JSONObject(bufferedReader.readLine());
 			    if(json.getString("MessageType").equalsIgnoreCase("ready")) {
 			    	serverThread.readyPlayers++;
+			    	if(serverThread.readyPlayers == serverThread.players) {
+			    		serverThread.gameStarted = true;
+			    		System.out.println("Game has been started! Are you the host? (Yes/No)");
+			    	}
 			    }
 			    // just print the response to allow for easier reading and debugging
 			    System.out.println(json.toString());

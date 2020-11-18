@@ -94,10 +94,21 @@ public class Peer {
 					break;
 				}else if(message.equalsIgnoreCase("ready")) {// if they type ready
 					System.out.println("Ready to play game! You can chat in the meantime!");
-					send = "{'MessageType': 'ready','username': '"+ username +"','message':'" + message + "'}";
+					send = generateMessage("ready", message);
+					serverThread.readyPlayers++;
 					ready = true;
-				}else if(ready) { // if ready can chat
-					send = "{'username': '"+ username +"','message':'" + message + "'}";
+				}else if(ready && !serverThread.gameStarted) { // if ready can chat
+					send = generateMessage("ready", message);
+				}else if(ready && serverThread.gameStarted) { // they are ready and the game has been started
+					if(message.equalsIgnoreCase("yes")){ // if they say yes to current host
+						serverThread.currentHost = true;
+						send = generateMessage("host", "is the game host!");	
+					}else {
+						serverThread.currentHost = false;
+						System.out.println("You are not the host! Please wait for a question to be asked!");
+					}
+				}else {
+					System.out.println("Unknown command!");
 				}
 				
 				// if there is something to send
@@ -110,5 +121,10 @@ public class Peer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	// allows some encapsulation allowing the serialization to change
+	private String generateMessage(String type, String message) {
+		return "{'MessageType': '"+ type +"','username': '"+ username +"','message':'" + message + "'}";
 	}
 }

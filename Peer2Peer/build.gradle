@@ -23,7 +23,7 @@ task runPeer(type: JavaExec) {
   main = 'Peer'
   standardInput = System.in
 
-  args 'name' // username
+  args 'Blake' // username
   args '7000' // port
 
 }
