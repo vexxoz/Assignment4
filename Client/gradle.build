@@ -1,0 +1,4 @@
+task run(type:Exec) {
+    workingDir './'
+    commandLine 'python', 'Client.py'
+} 
