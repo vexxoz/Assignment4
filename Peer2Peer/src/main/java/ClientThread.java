@@ -76,13 +76,8 @@ public class ClientThread extends Thread {
 			    	System.out.println(json.getString("username").toString() + " made an incorrect guess!");	
 			    }
 			    
-			    else if(json.getString("MessageType").equalsIgnoreCase("end") && !json.getString("username").equalsIgnoreCase(currentUsername)){ // someone else guessed wrong
+			    else if(json.getString("MessageType").equalsIgnoreCase("end") && !json.getString("username").equalsIgnoreCase(currentUsername)){ // someone else won
 			    	System.out.println(json.getString("username").toString() + " " + json.getString("message").toString());
-			    	System.exit(0);
-			    }
-			    
-			    else if(json.getString("MessageType").equalsIgnoreCase("end") && json.getString("username").equalsIgnoreCase(currentUsername)){ // someone else guessed wrong
-			    	System.out.println("YOU Won the game!");
 			    	System.exit(0);
 			    }
 			    

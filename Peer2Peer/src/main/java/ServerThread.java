@@ -87,7 +87,9 @@ public class ServerThread extends Thread{
 	void checkWin(String username) {
 		System.out.println("Checking ur win! You have: " + points);
 		if(points == winningPoints) {
+			System.out.println("YOU Won the game!");
 			generateMessage("end", "won the game!", username);
+			System.exit(0);
 		}
 	}
 	
