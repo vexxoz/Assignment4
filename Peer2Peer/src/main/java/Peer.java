@@ -10,6 +10,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import PtoP.Proto.Comms.*;
+import PtoP.Proto.Comms.broadcast.Builder;
+
 /**
  * This is the main class for the peer2peer program.
  * It starts a client with a username and port. Next the peer can decide who to listen to. 
@@ -92,7 +95,7 @@ public class Peer {
 		try {
 			System.out.println("> Type ready when ready to begin the game (exit to exit)");
 			while(true) {
-				String send = "";
+				broadcast send = null;
 				String message = bufferedReader.readLine();
 				if(message.equalsIgnoreCase("exit")){ // they want to exit
 					System.out.println("Now exiting!");
@@ -105,10 +108,8 @@ public class Peer {
 					serverThread.checkReady();
 				}else if(message.startsWith("chat")) {// chat is being made
 					try {
-						if(message.split(" ", 1)[1].length() > 0){
-							String chatMsg = message.split(" ", 1)[1]; 
-							send = generateMessage("chat", chatMsg);
-						}
+						String chatMsg = message.split(" ", 2)[1];
+						send = generateMessage("chat", chatMsg);
 					}catch(IndexOutOfBoundsException e) {
 						System.out.println("No message provided!");
 					}
@@ -150,7 +151,7 @@ public class Peer {
 				}
 				
 				// if there is something to send
-				if(send.length() > 0) {
+				if(send != null) {
 					serverThread.sendMessage(send);
 				}
 			}
@@ -199,7 +200,9 @@ public class Peer {
 	}
 	
 	// allows some encapsulation allowing the serialization to change
-	private String generateMessage(String type, String message) {
-		return "{'MessageType': '"+ type +"','username': '"+ username +"','message':'" + message + "'}";
+	private broadcast generateMessage(String type, String message) {
+		broadcast tempMessage = new Builder().setMessageType(type).setUsername(username).setData(message).build();
+		return tempMessage;
+//		return "{'MessageType': '"+ type +"','username': '"+ username +"','message':'" + message + "'}";
 	}
 }

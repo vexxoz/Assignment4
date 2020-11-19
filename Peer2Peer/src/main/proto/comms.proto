@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+message broadcast {
+	required string MessageType = 1;
+	required string Username = 2;
+	required string Data = 3;
+
+}

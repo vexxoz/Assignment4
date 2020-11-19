@@ -1,9 +1,12 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import org.json.*;
+import org.json.JSONObject;
+
+import PtoP.Proto.Comms.broadcast;
 
 /**
  * Client 
@@ -16,51 +19,53 @@ public class ClientThread extends Thread {
 	private ServerThread serverThread;
 	Socket currentSocket;
 	String currentUsername;
+	InputStream bufIn;
 	
 	public ClientThread(Socket socket, ServerThread in, String usernameIn) throws IOException {
 		bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		this.serverThread = in;
 		this.currentSocket = socket;
 		this.currentUsername = usernameIn;
+		this.bufIn = currentSocket.getInputStream();
 	}
 	public void run() {
 		while (true) {
 			try {
-			    JSONObject json = new JSONObject(bufferedReader.readLine());
-			    if(json.getString("MessageType").equalsIgnoreCase("ready")) { // someone sends the ready message
+			    broadcast message = broadcast.parseDelimitedFrom(bufIn);;
+			    if(message.getMessageType().equalsIgnoreCase("ready")) { // someone sends the ready message
 			    	serverThread.readyPlayers++; // increase the number of players that are ready
-			    	System.out.println(json.getString("username").toString() + " is ready!"); // tell the user that someone is ready
+			    	System.out.println(message.getUsername() + " is ready!"); // tell the user that someone is ready
 			    	serverThread.checkReady();
 			    }
 			    
-			    else if(json.getString("MessageType").equalsIgnoreCase("chat")) { // message is a chat
-			    	System.out.println("[" + json.getString("username").toString() + "] " + json.getString("message").toString());	
+			    else if(message.getMessageType().equalsIgnoreCase("chat")) { // message is a chat
+			    	System.out.println("[" + message.getUsername() + "] " + message.getData());	
 			    }
 			    
-			    else if(json.getString("MessageType").equalsIgnoreCase("host")) { // someone else is host
-			    	System.out.println("[" + json.getString("username").toString() + "] " + json.getString("message").toString());	
+			    else if(message.getMessageType().equalsIgnoreCase("host")) { // someone else is host
+			    	System.out.println("[" + message.getUsername() + "] " + message.getData());	
 			    	serverThread.currentHost = 0;
 			    }
 			    
-			    else if(json.getString("MessageType").equalsIgnoreCase("question")) { // message is a chat
-			    	System.out.println(json.getString("username").toString() + " asked: " + json.getString("message").toString());
+			    else if(message.getMessageType().equalsIgnoreCase("question")) { // message is a chat
+			    	System.out.println(message.getUsername() + " asked: " + message.getData());
 			    	System.out.print("Your answer:");
 			    }
 			    
-			    else if(json.getString("MessageType").equalsIgnoreCase("answer")) { // someone sends an answer
-//			    	System.out.println(json.getString("username").toString() + " guessed: " + json.getString("message").toString());
+			    else if(message.getMessageType().equalsIgnoreCase("answer")) { // someone sends an answer
+//			    	System.out.println(message.getUsername() + " guessed: " + message.getData());
 			    	if(serverThread.currentHost == 1) {
-			    		serverThread.calculateAnswer(json.getString("message").toString(), json.getString("username").toString());
+			    		serverThread.calculateAnswer(message.getData(), message.getUsername());
 			    	}
 			    }
 			    
 			    /// RESPONSES FROM SERVER IF ANS WAS RIGHT 
-			    else if(json.getString("MessageType").equalsIgnoreCase("incorrect") && json.getString("username").equalsIgnoreCase(currentUsername)) { // user guess not right
+			    else if(message.getMessageType().equalsIgnoreCase("incorrect") && message.getUsername().equalsIgnoreCase(currentUsername)) { // user guess not right
 			    	System.out.println("Wrong answer try again!");
 			    	System.out.print("Your answer:");
 			    }
 			    
-			    else if(json.getString("MessageType").equalsIgnoreCase("correct") && json.getString("username").equalsIgnoreCase(currentUsername)) { // user guess is right
+			    else if(message.getMessageType().equalsIgnoreCase("correct") && message.getUsername().equalsIgnoreCase(currentUsername)) { // user guess is right
 			    	System.out.println("You got it right!");
 			    	serverThread.currentHost = 1;
 			    	serverThread.points++;
@@ -68,17 +73,17 @@ public class ClientThread extends Thread {
 			    	System.out.println("Would you like to ask a question? (Yes/No)");
 			    }
 			    
-			    else if(json.getString("MessageType").equalsIgnoreCase("correct") && !json.getString("username").equalsIgnoreCase(currentUsername)){ // someone else guessed right
-			    	System.out.println(json.getString("username").toString() + " made a correct guess!");
-			    	System.out.println(json.getString("username").toString() + " is now the host!");	
+			    else if(message.getMessageType().equalsIgnoreCase("correct") && !message.getUsername().equalsIgnoreCase(currentUsername)){ // someone else guessed right
+			    	System.out.println(message.getUsername() + " made a correct guess!");
+			    	System.out.println(message.getUsername() + " is now the host!");	
 			    }
 			    
-			    else if(json.getString("MessageType").equalsIgnoreCase("incorrect") && !json.getString("username").equalsIgnoreCase(currentUsername)){ // someone else guessed wrong
-			    	System.out.println(json.getString("username").toString() + " made an incorrect guess!");	
+			    else if(message.getMessageType().equalsIgnoreCase("incorrect") && !message.getUsername().equalsIgnoreCase(currentUsername)){ // someone else guessed wrong
+			    	System.out.println(message.getUsername() + " made an incorrect guess!");	
 			    }
 			    
-			    else if(json.getString("MessageType").equalsIgnoreCase("end") && !json.getString("username").equalsIgnoreCase(currentUsername)){ // someone else won
-			    	System.out.println(json.getString("username").toString() + " " + json.getString("message").toString());
+			    else if(message.getMessageType().equalsIgnoreCase("end") && !message.getUsername().equalsIgnoreCase(currentUsername)){ // someone else won
+			    	System.out.println(message.getUsername() + " " + message.getData());
 			    	System.exit(0);
 			    }
 			    
@@ -92,9 +97,5 @@ public class ClientThread extends Thread {
 			}
 		}
 	}
-	
-//	private String decodeProto() {
-//		
-//	}
 
 }

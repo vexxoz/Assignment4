@@ -1,9 +1,13 @@
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
+
+import PtoP.Proto.Comms.broadcast;
+import PtoP.Proto.Comms.broadcast.Builder;
 
 /**
  * SERVER
@@ -49,20 +53,17 @@ public class ServerThread extends Thread{
 		}
 	}
 	
-	/**
-	 * Sending the message to the OutputStream for each socket that we saved
-	 */
-	void sendMessage(String message) {
+	void sendMessage(broadcast message) {
 		try {
 			for (Socket s : listeningSockets) {
-				PrintWriter out = new PrintWriter(s.getOutputStream(), true);
-				out.println(message);
+//				PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+				OutputStream out = s.getOutputStream();
+				message.writeDelimitedTo(out);
 		     }
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}	
-	
 	
 	void checkReady() {
     	if(readyPlayers == players) { // if everyone is ready
@@ -93,7 +94,9 @@ public class ServerThread extends Thread{
 	}
 	
 	// allows some encapsulation allowing the serialization to change
-	private String generateMessage(String type, String message, String username) {
-		return "{'MessageType': '"+ type +"','username': '"+ username +"','message':'" + message + "'}";
+	private broadcast generateMessage(String type, String message, String username) {
+		broadcast tempMessage = new Builder().setMessageType(type).setUsername(username).setData(message).build();
+		return tempMessage;
+//		return "{'MessageType': '"+ type +"','username': '"+ username +"','message':'" + message + "'}";
 	}
 }
