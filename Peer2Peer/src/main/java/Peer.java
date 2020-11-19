@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Random;
@@ -32,7 +33,7 @@ public class Peer {
 		this.serverThread = serverThread;
 		this.points = 0;
 		this.ready = false;
-		qFile = new File("Questions.json");
+		qFile = new File("./src/main/java/questions.json");
 	}
 	/**
 	 * Main method saying hi and also starting the Server thread where other peers can subscribe to listen
@@ -159,7 +160,7 @@ public class Peer {
 			while(read.hasNextLine()) {
 				tempJson = tempJson + read.nextLine();
 			}
-		}catch(FileNotFoundException e) {
+		}catch(FileNotFoundException y ) {
 			System.out.println("Cannot find queston file! Quitting!");
 			System.exit(1);
 		}

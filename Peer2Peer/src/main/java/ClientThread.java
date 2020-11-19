@@ -31,6 +31,9 @@ public class ClientThread extends Thread {
 			    	System.out.println("[" + json.getString("username").toString() + "] " + json.getString("message").toString());	
 			    }else if(json.getString("MessageType").equalsIgnoreCase("host")) { // message is a chat
 			    	System.out.println("[" + json.getString("username").toString() + "] " + json.getString("message").toString());	
+			    }else if(json.getString("MessageType").equalsIgnoreCase("question")) { // message is a chat
+			    	System.out.println(json.getString("username").toString() + " asked: " + json.getString("message").toString());
+			    	System.out.print("Your answer:");
 			    }else {
 			    	System.out.println("Unknown message recieved!");
 			    }
