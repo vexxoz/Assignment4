@@ -56,20 +56,34 @@ public class ClientThread extends Thread {
 			    /// RESPONSES FROM SERVER IF ANS WAS RIGHT 
 			    else if(json.getString("MessageType").equalsIgnoreCase("incorrect") && json.getString("username").equalsIgnoreCase(currentUsername)) { // user guess not right
 			    	System.out.println("Wrong answer try again!");
+			    	System.out.print("Your answer:");
 			    }
 			    
 			    else if(json.getString("MessageType").equalsIgnoreCase("correct") && json.getString("username").equalsIgnoreCase(currentUsername)) { // user guess is right
 			    	System.out.println("You got it right!");
 			    	serverThread.currentHost = 1;
+			    	serverThread.points++;
+			    	serverThread.checkWin(currentUsername);
 			    	System.out.println("Would you like to ask a question? (Yes/No)");
 			    }
 			    
 			    else if(json.getString("MessageType").equalsIgnoreCase("correct") && !json.getString("username").equalsIgnoreCase(currentUsername)){ // someone else guessed right
-			    	System.out.println(json.getString("username").toString() + " made a correct guess!");	
+			    	System.out.println(json.getString("username").toString() + " made a correct guess!");
+			    	System.out.println(json.getString("username").toString() + " is now the host!");	
 			    }
 			    
 			    else if(json.getString("MessageType").equalsIgnoreCase("incorrect") && !json.getString("username").equalsIgnoreCase(currentUsername)){ // someone else guessed wrong
 			    	System.out.println(json.getString("username").toString() + " made an incorrect guess!");	
+			    }
+			    
+			    else if(json.getString("MessageType").equalsIgnoreCase("end") && !json.getString("username").equalsIgnoreCase(currentUsername)){ // someone else guessed wrong
+			    	System.out.println(json.getString("username").toString() + " " + json.getString("message").toString());
+			    	System.exit(0);
+			    }
+			    
+			    else if(json.getString("MessageType").equalsIgnoreCase("end") && json.getString("username").equalsIgnoreCase(currentUsername)){ // someone else guessed wrong
+			    	System.out.println("YOU Won the game!");
+			    	System.exit(0);
 			    }
 			    
 			    else {

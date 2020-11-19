@@ -22,8 +22,6 @@ public class Peer {
 	private String username;
 	private BufferedReader bufferedReader;
 	private ServerThread serverThread;
-	protected int points;
-	protected final int winningPoints = 5;
 	private boolean ready;
 	private File qFile;
 	
@@ -31,7 +29,6 @@ public class Peer {
 		this.username = username;
 		this.bufferedReader = bufReader;
 		this.serverThread = serverThread;
-		this.points = 0;
 		this.ready = false;
 		qFile = new File("questions.json");
 	}
@@ -130,6 +127,8 @@ public class Peer {
 						// send the question
 						System.out.println("You asked: " + question);
 						send = generateMessage("question", question);
+					}else {
+						System.out.println("Type yes when ready to ask a question!");
 					}
 				}else if(serverThread.currentHost == 0 && ready && serverThread.gameStarted) { // if game is started and user is not the host
 					if(message.length() > 0) {

@@ -20,6 +20,8 @@ public class ServerThread extends Thread{
 	protected boolean gameStarted;
 	protected int currentHost;
 	protected String currentAnswer;
+	protected final int winningPoints = 2;
+	protected int points;
 	
 	public ServerThread(String portNum) throws IOException {
 		serverSocket = new ServerSocket(Integer.valueOf(portNum));
@@ -28,6 +30,7 @@ public class ServerThread extends Thread{
 		this.gameStarted = false;
 		this.currentHost = -1;
 		this.currentAnswer = "";
+		this.points = 0;
 	}
 	
 	/**
@@ -73,10 +76,17 @@ public class ServerThread extends Thread{
 		if(in.equalsIgnoreCase(currentAnswer)) {
 			sendMessage(generateMessage("correct", "Answer is correct!", username));
 			currentHost = 0;
-			System.out.println(username + " made a correct guess!");	
+			System.out.println(username + " made a correct guess!");
+			System.out.println(username + " is now the host!");	
 		}else {
 			sendMessage(generateMessage("incorrect", "Answer is not correct!", username));
 			System.out.println(username + " made an incorrect guess!");
+		}
+	}
+	
+	void checkWin(String username) {
+		if(points == winningPoints) {
+			generateMessage("end", "won the game!", username);
 		}
 	}
 	
