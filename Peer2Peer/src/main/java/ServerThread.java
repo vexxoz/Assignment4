@@ -20,7 +20,7 @@ public class ServerThread extends Thread{
 	protected boolean gameStarted;
 	protected int currentHost;
 	protected String currentAnswer;
-	protected final int winningPoints = 2;
+	protected final int winningPoints = 1;
 	protected int points;
 	
 	public ServerThread(String portNum) throws IOException {
@@ -85,10 +85,9 @@ public class ServerThread extends Thread{
 	}
 	
 	void checkWin(String username) {
-		System.out.println("Checking ur win! You have: " + points);
 		if(points == winningPoints) {
 			System.out.println("YOU Won the game!");
-			generateMessage("end", "won the game!", username);
+			sendMessage(generateMessage("end", "won the game!", username));
 			System.exit(0);
 		}
 	}

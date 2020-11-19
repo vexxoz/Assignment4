@@ -37,8 +37,9 @@ public class ClientThread extends Thread {
 			    	System.out.println("[" + json.getString("username").toString() + "] " + json.getString("message").toString());	
 			    }
 			    
-			    else if(json.getString("MessageType").equalsIgnoreCase("host")) { // message is a chat
+			    else if(json.getString("MessageType").equalsIgnoreCase("host")) { // someone else is host
 			    	System.out.println("[" + json.getString("username").toString() + "] " + json.getString("message").toString());	
+			    	serverThread.currentHost = 0;
 			    }
 			    
 			    else if(json.getString("MessageType").equalsIgnoreCase("question")) { // message is a chat
