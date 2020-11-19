@@ -33,7 +33,7 @@ public class Peer {
 		this.serverThread = serverThread;
 		this.points = 0;
 		this.ready = false;
-		qFile = new File("./src/main/java/questions.json");
+		qFile = new File("questions.json");
 	}
 	/**
 	 * Main method saying hi and also starting the Server thread where other peers can subscribe to listen

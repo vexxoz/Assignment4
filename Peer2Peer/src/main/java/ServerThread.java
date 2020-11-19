@@ -73,8 +73,10 @@ public class ServerThread extends Thread{
 		if(in.equalsIgnoreCase(currentAnswer)) {
 			sendMessage(generateMessage("correct", "Answer is correct!", username));
 			currentHost = 0;
+			System.out.println(username + " made a correct guess!");	
 		}else {
 			sendMessage(generateMessage("incorrect", "Answer is not correct!", username));
+			System.out.println(username + " made an incorrect guess!");
 		}
 	}
 	
