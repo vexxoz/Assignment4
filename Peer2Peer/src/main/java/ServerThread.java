@@ -18,14 +18,14 @@ public class ServerThread extends Thread{
 	protected int players;
 	protected int readyPlayers;
 	protected boolean gameStarted;
-	protected boolean currentHost;
+	protected int currentHost;
 	
 	public ServerThread(String portNum) throws IOException {
 		serverSocket = new ServerSocket(Integer.valueOf(portNum));
 		this.players = 1;
 		this.readyPlayers = 0;
 		this.gameStarted = false;
-		this.currentHost = false;
+		this.currentHost = -1;
 	}
 	
 	/**

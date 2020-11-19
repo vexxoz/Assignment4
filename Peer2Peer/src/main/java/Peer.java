@@ -21,7 +21,6 @@ public class Peer {
 	private String username;
 	private BufferedReader bufferedReader;
 	private ServerThread serverThread;
-	protected boolean isHost;
 	protected int points;
 	protected final int winningPoints = 5;
 	private boolean ready;
@@ -31,7 +30,6 @@ public class Peer {
 		this.username = username;
 		this.bufferedReader = bufReader;
 		this.serverThread = serverThread;
-		this.isHost = false;
 		this.points = 0;
 		this.ready = false;
 		qFile = new File("Questions.json");
@@ -108,19 +106,19 @@ public class Peer {
 					serverThread.checkReady();
 				}else if(ready && !serverThread.gameStarted) { // ready but game not yet started
 					send = generateMessage("chat", message);
-				}else if(ready && serverThread.gameStarted) { // they are ready and the game has been started, for picking the host section
+				}else if(ready && serverThread.gameStarted && serverThread.currentHost == -1) { // they are ready and the game has been started, for picking the host section
 					
 					if(message.equalsIgnoreCase("yes")){ // if they say yes to current host
-						serverThread.currentHost = true;
+						serverThread.currentHost = 1;
 						send = generateMessage("host", "is the game host!");
 						System.out.println("You are now the host!");
 						System.out.println("Would you like to ask a question? (Yes/No)");
 					}else { // they dont want to be a host
-						serverThread.currentHost = false;
+						serverThread.currentHost = 0;
 						System.out.println("You are not the host! Please wait for a question to be asked!");
 					}
 					
-				}else if(serverThread.currentHost && ready && serverThread.gameStarted) { // if game is started and user is host
+				}else if(serverThread.currentHost == 1 && ready && serverThread.gameStarted) { // if game is started and user is host
 					if(message.equalsIgnoreCase("yes")) {
 						// get a question from the json list
 						String[] questionArray = getQuestion();
@@ -131,7 +129,7 @@ public class Peer {
 						// send the question
 						send = generateMessage("question", question);
 					}
-				}else if(!serverThread.currentHost && ready && serverThread.gameStarted) { // if game is started and user is not the host
+				}else if(serverThread.currentHost == 0 && ready && serverThread.gameStarted) { // if game is started and user is not the host
 					
 				}else {
 					System.out.println("Unknown command!");
