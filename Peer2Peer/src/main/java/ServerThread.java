@@ -19,6 +19,7 @@ public class ServerThread extends Thread{
 	protected int readyPlayers;
 	protected boolean gameStarted;
 	protected int currentHost;
+	protected String currentAnswer;
 	
 	public ServerThread(String portNum) throws IOException {
 		serverSocket = new ServerSocket(Integer.valueOf(portNum));
@@ -26,6 +27,7 @@ public class ServerThread extends Thread{
 		this.readyPlayers = 0;
 		this.gameStarted = false;
 		this.currentHost = -1;
+		this.currentAnswer = "";
 	}
 	
 	/**
@@ -58,10 +60,26 @@ public class ServerThread extends Thread{
 		}
 	}	
 	
+	
 	void checkReady() {
     	if(readyPlayers == players) { // if everyone is ready
     		gameStarted = true; // the game is started
     		System.out.println("Game has been started! Are you the host? (Yes/No)"); // ask who is the host
     	}
+	}
+	
+	// get the answer and the port of the person who answered as a way to tell them they were right
+	void calculateAnswer(String in, String username) {
+		if(in.equalsIgnoreCase(currentAnswer)) {
+			sendMessage(generateMessage("correct", "Answer is correct!", username));
+			currentHost = 0;
+		}else {
+			sendMessage(generateMessage("incorrect", "Answer is not correct!", username));
+		}
+	}
+	
+	// allows some encapsulation allowing the serialization to change
+	private String generateMessage(String type, String message, String username) {
+		return "{'MessageType': '"+ type +"','username': '"+ username +"','message':'" + message + "'}";
 	}
 }

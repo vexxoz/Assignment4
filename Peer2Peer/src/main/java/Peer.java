@@ -68,7 +68,7 @@ public class Peer {
 			Socket socket = null;
 			try {
 				socket = new Socket(address[0], Integer.valueOf(address[1]));
-				new ClientThread(socket, serverThread).start();
+				new ClientThread(socket, serverThread, username).start();
 			} catch (Exception c) {
 				if (socket != null) {
 					socket.close();
@@ -126,12 +126,16 @@ public class Peer {
 						
 						//parse the question array
 						String question = questionArray[0];
-						String answer = questionArray[1];
+						serverThread.currentAnswer = questionArray[1];
 						// send the question
+						System.out.println("You asked: " + question);
 						send = generateMessage("question", question);
 					}
 				}else if(serverThread.currentHost == 0 && ready && serverThread.gameStarted) { // if game is started and user is not the host
-					
+					if(message.length() > 0) {
+						System.out.println("You answered: " + message);
+						send = generateMessage("answer", message);
+					}
 				}else {
 					System.out.println("Unknown command!");
 				}
