@@ -1,6 +1,12 @@
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Random;
+import java.util.Scanner;
+
+import org.json.*;
 
 /**
  * This is the main class for the peer2peer program.
@@ -19,6 +25,7 @@ public class Peer {
 	protected int points;
 	protected final int winningPoints = 5;
 	private boolean ready;
+	private File qFile;
 	
 	public Peer(BufferedReader bufReader, String username, ServerThread serverThread){
 		this.username = username;
@@ -27,6 +34,7 @@ public class Peer {
 		this.isHost = false;
 		this.points = 0;
 		this.ready = false;
+		qFile = new File("Questions.json");
 	}
 	/**
 	 * Main method saying hi and also starting the Server thread where other peers can subscribe to listen
@@ -98,16 +106,33 @@ public class Peer {
 					serverThread.readyPlayers++;
 					ready = true;
 					serverThread.checkReady();
-				}else if(ready && !serverThread.gameStarted) { // if ready can chat
+				}else if(ready && !serverThread.gameStarted) { // ready but game not yet started
 					send = generateMessage("chat", message);
-				}else if(ready && serverThread.gameStarted) { // they are ready and the game has been started
+				}else if(ready && serverThread.gameStarted) { // they are ready and the game has been started, for picking the host section
+					
 					if(message.equalsIgnoreCase("yes")){ // if they say yes to current host
 						serverThread.currentHost = true;
-						send = generateMessage("host", "is the game host!");	
-					}else {
+						send = generateMessage("host", "is the game host!");
+						System.out.println("You are now the host!");
+						System.out.println("Would you like to ask a question? (Yes/No)");
+					}else { // they dont want to be a host
 						serverThread.currentHost = false;
 						System.out.println("You are not the host! Please wait for a question to be asked!");
 					}
+					
+				}else if(serverThread.currentHost && ready && serverThread.gameStarted) { // if game is started and user is host
+					if(message.equalsIgnoreCase("yes")) {
+						// get a question from the json list
+						String[] questionArray = getQuestion();
+						
+						//parse the question array
+						String question = questionArray[0];
+						String answer = questionArray[1];
+						// send the question
+						send = generateMessage("question", question);
+					}
+				}else if(!serverThread.currentHost && ready && serverThread.gameStarted) { // if game is started and user is not the host
+					
 				}else {
 					System.out.println("Unknown command!");
 				}
@@ -122,6 +147,42 @@ public class Peer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	// gets a question from the Json file
+	private String[] getQuestion() {
+		// set up temp variables
+		String[] temp = new String[2];
+		String tempJson = "";
+		
+		// try reading the file of questions
+		try {
+			Scanner read = new Scanner(qFile);
+			while(read.hasNextLine()) {
+				tempJson = tempJson + read.nextLine();
+			}
+		}catch(FileNotFoundException e) {
+			System.out.println("Cannot find queston file! Quitting!");
+			System.exit(1);
+		}
+		
+		// turn the file into a json array
+		JSONTokener json = new JSONTokener(tempJson);
+		JSONArray jsonQList = new JSONArray(json);
+		
+		// get a random int for a random question to be asked
+		Random rand = new Random();
+		int randIndex = rand.nextInt(jsonQList.length());
+		
+		// get the question at that random index
+		JSONObject question = (JSONObject)jsonQList.get(randIndex); 
+		
+		// fix the question into the string array
+		temp[0] = question.getString("question");
+		temp[1] = question.getString("answer");
+		
+		//return the string array
+		return temp;
 	}
 	
 	// allows some encapsulation allowing the serialization to change
