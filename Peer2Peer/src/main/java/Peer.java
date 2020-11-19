@@ -1,13 +1,14 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Random;
 import java.util.Scanner;
 
-import org.json.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 /**
  * This is the main class for the peer2peer program.
@@ -97,11 +98,20 @@ public class Peer {
 					System.out.println("Now exiting!");
 					break;
 				}else if(message.equalsIgnoreCase("ready") && !ready) {// if they type ready
-					System.out.println("Ready to play game! You can chat in the meantime!");
+					System.out.println("Ready to play game! You can type now to chat or once the game has started you can chat by using chat <message> anytime!");
 					send = generateMessage("ready", message);
 					serverThread.readyPlayers++;
 					ready = true;
 					serverThread.checkReady();
+				}else if(message.startsWith("chat")) {// chat is being made
+					try {
+						if(message.split(" ", 1)[1].length() > 0){
+							String chatMsg = message.split(" ", 1)[1]; 
+							send = generateMessage("chat", chatMsg);
+						}
+					}catch(IndexOutOfBoundsException e) {
+						System.out.println("No message provided!");
+					}
 				}else if(ready && !serverThread.gameStarted) { // ready but game not yet started
 					send = generateMessage("chat", message);
 				}else if(ready && serverThread.gameStarted && serverThread.currentHost == -1) { // they are ready and the game has been started, for picking the host section
@@ -163,6 +173,7 @@ public class Peer {
 			while(read.hasNextLine()) {
 				tempJson = tempJson + read.nextLine();
 			}
+			read.close();
 		}catch(FileNotFoundException y ) {
 			System.out.println("Cannot find queston file! Quitting!");
 			System.exit(1);
